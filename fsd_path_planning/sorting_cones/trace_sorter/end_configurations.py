@@ -506,24 +506,28 @@ def find_all_end_configurations(
 
     points_xy = points[:, :2]
 
-    (
-        end_configurations,
-        all_configurations_and_is_end_configuration_indicator,
-    ) = _impl_find_all_end_configurations(
-        points_xy,
-        cone_type,
-        start_idx,
-        neighbors_flat,
-        borders,
-        target_length,
-        threshold_directional_angle,
-        threshold_absolute_angle,
-        first_k_indices_must_be,
-        car_position,
-        car_direction,
-        car_size,
-        store_all_end_configurations,
-    )
+    try:
+        (
+            end_configurations,
+            all_configurations_and_is_end_configuration_indicator,
+        ) = _impl_find_all_end_configurations(
+            points_xy,
+            cone_type,
+            start_idx,
+            neighbors_flat,
+            borders,
+            target_length,
+            threshold_directional_angle,
+            threshold_absolute_angle,
+            first_k_indices_must_be,
+            car_position,
+            car_direction,
+            car_size,
+            store_all_end_configurations,
+        )
+    except ZeroDivisionError:
+        print("Could not create a valid trace using the provided points")  
+        raise NoPathError("Could not create a valid trace using the provided points")        
 
     if len(first_k_indices_must_be) > 0 and len(end_configurations) > 0:
         mask_keep = (
