@@ -36,14 +36,16 @@ from fsd_path_planning.utils.utils import Timer
 
 
 class PathPlanner:
-    def __init__(self, mission: MissionTypes):
+    def __init__(self, mission: MissionTypes, 
+                 cone_sorting_kwargs: dict=None, 
+                 cone_fitting_kwargs: dict=None,
+                 path_calculation_kwargs: dict=None, 
+                 cone_matching_kwargs: dict=None):
         self.mission = mission
         self.skidpad_relocalizer = SkidpadRelocalizer()
-        self.cone_sorting = create_default_sorting(mission)
-        self.cone_matching = create_default_cone_matching_with_non_monotonic_matches(
-            mission
-        )
-        self.pathing = create_default_pathing(mission)
+        self.cone_sorting = create_default_sorting(mission, cone_sorting_kwargs)
+        self.cone_matching = create_default_cone_matching_with_non_monotonic_matches(mission, cone_matching_kwargs)
+        self.pathing = create_default_pathing(mission, path_calculation_kwargs, cone_fitting_kwargs)
         self.global_path: Optional[FloatArray] = None
 
     def _convert_direction_to_array(self, direction: Any) -> FloatArray:
