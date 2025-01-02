@@ -60,7 +60,11 @@ def get_path_calculation_config(
     )
 
 
-def create_default_pathing(mission: MissionTypes) -> CalculatePath:
+def create_default_pathing(
+        mission: MissionTypes, 
+        path_calculation_kwargs: dict, 
+        cone_fitting_kwargs: dict
+) -> CalculatePath:
     """
     Create a path calculation instance based on mission.
 
@@ -71,8 +75,8 @@ def create_default_pathing(mission: MissionTypes) -> CalculatePath:
     Returns:
         The created path calculation instance
     """
-    path_calculation_kwargs = get_path_calculation_config(mission)
-    cone_fitting_kwargs = get_cone_fitting_config(mission)
+    path_calculation_kwargs = get_path_calculation_config(mission) if path_calculation_kwargs is None else path_calculation_kwargs
+    cone_fitting_kwargs = get_cone_fitting_config(mission) if cone_fitting_kwargs is None else cone_fitting_kwargs
 
     possible_path_calculation_classes: Dict[MissionTypes, Type[CalculatePath]] = {
         MissionTypes.skidpad: SkidpadCalculatePath,
@@ -91,7 +95,9 @@ def create_default_pathing(mission: MissionTypes) -> CalculatePath:
 
 
 def create_default_sorting(
-    mission: MissionTypes, experiment_performance_improvements: bool = False
+        mission: MissionTypes,
+        cone_sorting_kwargs: dict,
+        experiment_performance_improvements: bool = False
 ) -> ConeSorting:
     """
     Create a cone sorting instance with default values.
@@ -102,7 +108,7 @@ def create_default_sorting(
     Returns:
         cone_sorting: The created ConeSorting instance
     """
-    cone_sorting_kwargs = get_cone_sorting_config(mission)
+    cone_sorting_kwargs = get_cone_sorting_config(mission) if cone_sorting_kwargs is None else cone_sorting_kwargs
 
     cone_sorting_kwargs[
         "experimental_performance_improvements"
@@ -132,6 +138,7 @@ def get_default_matching_kwargs(mission: MissionTypes) -> KwargsType:
 
 def create_default_cone_matching(
     mission: MissionTypes,  # pylint: disable=unused-argument
+    cone_matching_kwargs: dict=None,
 ) -> ConeMatching:
     """
     Create a cone matching instance based on mission.
@@ -142,12 +149,13 @@ def create_default_cone_matching(
     Returns:
         The created ConeMatching instance
     """
-    kwargs = get_default_matching_kwargs(mission)
+    kwargs = get_default_matching_kwargs(mission) if cone_matching_kwargs is None else cone_matching_kwargs
     return ConeMatching(**kwargs)
 
 
 def create_default_cone_matching_with_non_monotonic_matches(
     mission: MissionTypes,  # pylint: disable=unused-argument
+    cone_matching_kwargs: dict=None,
 ) -> ConeMatching:
     """
     Create a cone matching instance based on mission.
@@ -158,7 +166,7 @@ def create_default_cone_matching_with_non_monotonic_matches(
     Returns:
         The created ConeMatching instance
     """
-    kwargs = get_default_matching_kwargs(mission)
+    kwargs = get_default_matching_kwargs(mission) if cone_matching_kwargs is None else cone_matching_kwargs
     assert "matches_should_be_monotonic" in kwargs
     kwargs["matches_should_be_monotonic"] = False
     return ConeMatching(**kwargs)

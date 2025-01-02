@@ -51,8 +51,12 @@ MissionToRelocalizer: dict[MissionTypes, Relocalizer] = {
 
 
 class PathPlanner:
-    def __init__(
-        self, mission: MissionTypes, experimental_performance_improvements: bool = False
+    def __init__(self, mission: MissionTypes, 
+                 cone_sorting_kwargs: dict=None, 
+                 cone_fitting_kwargs: dict=None,
+                 path_calculation_kwargs: dict=None, 
+                 cone_matching_kwargs: dict=None,
+                 experimental_performance_improvements: bool = False
     ) -> None:
         self.mission = mission
 
@@ -63,13 +67,20 @@ class PathPlanner:
             self.relocalizer = relocalizer_class()
 
         self.cone_sorting = create_default_sorting(
-            mission, experimental_performance_improvements
+            mission, 
+            cone_sorting_kwargs, 
+            experimental_performance_improvements,
         )
 
         self.cone_matching = create_default_cone_matching_with_non_monotonic_matches(
-            mission
+            mission,
+            cone_matching_kwargs,
         )
-        self.pathing = create_default_pathing(mission)
+        self.pathing = create_default_pathing(
+            mission,
+            path_calculation_kwargs,
+            cone_fitting_kwargs,
+        )
         self.global_path: Optional[FloatArray] = None
 
         self.experimental_performance_improvements = (
